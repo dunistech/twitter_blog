@@ -1,0 +1,38 @@
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.onclick = function() {
+            const postId = this.dataset.postId;
+            fetch(`/like/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likeCountSpan = document.getElementById(`like-count-${postId}`);
+                likeCountSpan.textContent = data.likes;
+                if (this.textContent === "Like") {
+                    this.textContent = "Unlike";
+                } else {
+                    this.textContent = "Like";
+                }
+            });
+        }
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
